@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Photo view app for iPad using HTML5 and CSS3</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum_scale=1.0, user-scalable=no" />
+	
+	<style>
+		body{
+			margin: 0;
+			padding:0;
+			font: 28px/26px Arial;
+			background-image: url(photo/back.png);;
+		
+		}
+		.photoList{
+			width: 100%;
+		}
+		
+		#photoUnique ul.photoSet{
+			list-style: none;
+			margin: 0;
+			padding:10px;
+			z-index: 10;
+			position: absolute;
+		}
+		
+		#photoUnique ul.photoSet p.text{
+			position:relative;
+			left:20px;
+			margin: 0px;
+			font: bold 15pt/10pt Times New Roman;
+			color: #333;
+			text-shadow: 0 1px 0 #0F0;
+			 
+		}
+		
+		#photoUnique ul.photoSet img{
+			-webkit-border-radius: 10px;
+		}
+		
+		#photoUnique ul.photoSet li{
+			width: 150px;
+			height: 230px;
+			padding: 0;
+			float: left;
+		}
+		
+		#photoShow{
+			background-color: black;
+			
+			height: 100%;
+			width: 100%;
+			
+			 
+			
+			position: absolute;
+			top:0;
+			left:0;
+			
+			
+			z-index: 5;
+			opacity: 0;
+			-webkit-transition: all 500ms ease-out;
+		}
+		
+		#photoShow.showBright{
+			opacity: 1;
+			z-index: 30;
+		}
+		
+		#photoShow.showDim{
+			opacity: 0;
+			z-index: 5;
+		}
+		
+		#photoShow img{
+			 -webkit-transform: translateZ(-1000px) rotateY(180deg) translateZ(1000px);
+			-webkit-transition: all 1000ms ease-out;
+			
+			opacity: 0;
+		}
+		
+		#photoShow img.displayLocalImage{
+			-webkit-transform: translateZ(0) rotateY(0deg) translateZ(0);
+			 
+			opacity: 1;
+		}
+		
+		#photoShow img.hideLocalImage{
+		 
+		-webkit-transform-origin:center left;
+		-webkit-transform: scale(.1) rotateY(-90deg) translateZ(1000px);
+		opacity: 0;
+		}
+		
+		#photoShow img{
+			position:absolute;
+			top:350px;
+			left:300px; 
+			 
+		}
+		
+		#textName{
+			position:absolute;
+			top:50px;
+			left:100px; 
+		}
+		
+		#textName .showText{
+			-webkit-transform: scale(1);
+			opacity: 1;
+		}
+		
+		#textName .hideText{
+			-webkit-transform: scale(0);
+			opacity: 0.5;
+		}
+		
+		#textName.textBright{
+			opacity: 1;
+			z-index: 30;
+		}
+		
+		#textName.textDim{
+			opacity: 0;
+			z-index: 5;
+		}
+		
+		
+		
+		
+		
+	</style> 
+	 
+	<script type="text/javascript">
+		function displayPhoto(clickedImage){
+			//Get big image attribute in the img tag
+			var imageDisplay = clickedImage.getAttribute('bigPicture');
+			
+			
+			
+			//Get list of image items from the document
+			var imageList = clickedImage.parentNode.parentNode.getElementsByTagName("img");
+			var nameList = clickedImage.parentNode.parentNode.getElementsByTagName("p");
+			 
+			
+			
+			
+			//Number of images in the list
+			var totalImage = imageList.length;
+			var selected = 0;
+			var cap;
+			
+			for(var i=0;i<totalImage;i++)
+			{
+				if(imageList[i].getAttribute('bigPicture')==imageDisplay)
+				{
+					selected = i;
+					cap = nameList[i].innerHTML;
+					
+					break;
+				}
+			}
+			
+			
+			//Get the location where to insert the bigPicture
+			var loc = document.getElementById('photoShow');
+			
+			//Create image
+			var pasteImage = document.createElement('IMG');
+			pasteImage.src =imageDisplay;
+			
+			//var textDisplay = clickedImage.getElementsByTagName("p");
+			
+			
+			//Attach image in the document
+			loc.appendChild(pasteImage);
+			
+			//add button
+			var element = document.createElement("input");
+        	//Assign different attributes to the element. 
+        	 element.type = "button";
+    		element.value = "Quit"; // Really? You want the default value to be the type string?
+    		element.name = "ClickME";  // And the name too?
+    		element.id = "buttonID";
+    		element.style ="position: absolute; left: 100px; top: 100px;";
+    		element.style="font-weight: bold"
+    		
+    		
+    		element.onclick = function() { // Note this is a function
+       		 location.reload();
+    		};
+        	 
+        		
+			loc.appendChild(element);
+
+
+			var textLoc = document.getElementById("textName");
+			
+				window.setTimeout(function(){
+				pasteImage.className="displayLocalImage";
+				},100);
+			
+			
+			document.getElementById('photoShow').className = 'showBright';
+			textLoc.className = 'textBright';
+		
+			document.getElementById('buttonID').style.height= "50px"; 
+			document.getElementById('buttonID').style.width= "100px"; 
+			document.getElementById('buttonID').style.position= "absolute"; 
+			document.getElementById('buttonID').style.top= "100px"; 
+			document.getElementById('buttonID').style.left= "350px";
+			document.getElementById('buttonID').style.font= "bold 18px Arial";
+		
+			pasteImage.onclick=function(){
+				
+				pasteImage.className="hideLocalImage";
+				window.setTimeout(function(){
+					loc.removeChild(pasteImage);
+					loc.removeChild(element);
+					
+					if(selected < (totalImage -1))
+					{
+						displayPhoto(imageList[selected + 1]);
+					}
+					else
+					{
+						displayPhoto(imageList[0]);
+					}
+					
+					
+				},500);
+			} 	 
+		}
+	
+	</script>
+
+</head>
+
+<body>
+	<section class="photoList" id="photoUnique">
+		<ul class="photoSet">
+			<li>
+				<img src="photo/fan5.png" bigPicture="photoBig/fan5-big.png" onclick="displayPhoto(this);">
+				<p class="text">Yellow flower </p>
+			</li>
+			<li>
+				<img src="photo/fan5a.png" bigPicture="photoBig/fan5a-big.png" onclick="displayPhoto(this);">
+				<p class="text">Orange flower </p>
+			</li>
+			<li>
+				<img src="photo/fan5b.png" bigPicture="photoBig/fan5b-big.png" onclick="displayPhoto(this);">
+				<p class="text">Pink flower </p>
+			</li>
+			<li>
+				<img src="photo/fan5c.png" bigPicture="photoBig/fan5c-big.png" onclick="displayPhoto(this);">
+				<p class="text">Blue flower </p>
+			</li>
+			<li>
+				<img src="photo/fan5d.png" bigPicture="photoBig/fan5d-big.png" onclick="displayPhoto(this);">
+				<p class="text">Green flower </p>
+			</li>
+			<li>
+				<img src="photo/fan6.png" bigPicture="photoBig/fan6-big.png" onclick="displayPhoto(this);">
+				<p class="text">Brown fan </p>
+			</li>
+			<li>
+				<img src="photo/fan6a.png" bigPicture="photoBig/fan6a-big.png" onclick="displayPhoto(this);">
+				<p class="text">Pink fan </p>
+			</li>
+			<li>
+				<img src="photo/fan6b.png" bigPicture="photoBig/fan6b-big.png" onclick="displayPhoto(this);">
+				<p class="text">Green fan </p>
+			</li>
+			<li>
+				<img src="photo/fan6c.png" bigPicture="photoBig/fan6c-big.png" onclick="displayPhoto(this);">
+				<p class="text">Blue fan </p>
+			</li>
+		</ul>
+		
+		<div id="photoShow"></div>
+		<div id="textName"></div>
+	</section>
+
+
+
+</body>
+</html>
